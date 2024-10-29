@@ -1,0 +1,39 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Dicoding Event</string>
+
+    <string name="title_home">Home</string>
+    <string name="title_upcoming">Upcoming</string>
+    <string name="title_finished">Finished</string>
+    <string name="title_detail">Detail Event</string>
+
+    <string name="title_text_upcoming">Upcoming Events</string>
+    <string name="title_text_finished">Finished Events</string>
+
+    <string name="event_logo">Event Logo</string>
+    <string name="event_mediaCover">Event Media Cover</string>
+    <string name="event_name">Event Name</string>
+    <string name="event_category">Event Category</string>
+    <string name="event_ownerName_title">Diselenggarakan oleh:</string>
+    <string name="event_ownerName">Event Owner Name</string>
+    <string name="event_summary">Event Summary</string>
+    <string name="event_beginTime_title">Terbuka Hingga:</string>
+    <string name="event_beginTime">Event Begin Time</string>
+    <string name="event_quota_title">Sisa Kuota:</string>
+    <string name="event_quota">Remaining Quota</string>
+    <string name="event_description_title">Deskripsi</string>
+    <string name="event_description">Event Deskripsi</string>
+    <string name="event_schedule_title">Jadwal Pelaksanaan</string>
+    <string name="event_schedule_begin_title">Mulai  :</string>
+    <string name="event_schedule_begin">Begin Time</string>
+    <string name="event_schedule_end_title">Selesai:</string>
+    <string name="event_schedule_end">End Time</string>
+    <string name="event_cityName_title">Lokasi</string>
+    <string name="event_cityName" tools:keep="@string/event_cityName">Event City Name</string>
+    <string name="free_register">Daftar Gratis</string>
+
+    <string name="searchbar_hint">Search</string>
+    <string name="searchview_hint">Search&#8239;</string>
+
+    <string name="refresh">Refresh</string>
+    <string name="error">Terjadi kesalahan. Coba lagi?</string>
+</resources>

@@ -1,0 +1,22 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.DicodingEvent" parent="Theme.Material3.DayNight">
+        <!-- Customize your light theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSurfaceContainer">@color/white</item>
+        <item name="colorOnSurface">@color/colorPrimary</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="colorSecondaryContainer">@color/blue_light</item>
+        <item name="colorOnSecondaryContainer">@color/colorPrimary</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:fontFamily">@font/quicksand_bold_700</item>
+
+        <item name="colorPrimaryInverse">@color/blue_light</item>
+
+        <item name="colorSurfaceContainerHigh">@color/grey_light</item>
+    </style>
+
+    <style name="Theme.DicodingEvent" parent="Base.Theme.DicodingEvent" />
+</resources>
