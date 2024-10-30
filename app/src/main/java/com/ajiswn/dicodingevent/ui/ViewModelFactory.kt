@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ajiswn.dicodingevent.data.EventRepository
 import com.ajiswn.dicodingevent.di.Injection
+import com.ajiswn.dicodingevent.ui.detail.DetailViewModel
 import com.ajiswn.dicodingevent.ui.finished.FinishedViewModel
 import com.ajiswn.dicodingevent.ui.home.HomeViewModel
+import com.ajiswn.dicodingevent.ui.search.SearchViewModel
 import com.ajiswn.dicodingevent.ui.upcoming.UpcomingViewModel
 
 class ViewModelFactory private constructor(private val eventRepository: EventRepository) :
@@ -19,6 +21,10 @@ class ViewModelFactory private constructor(private val eventRepository: EventRep
             return FinishedViewModel(eventRepository) as T
         } else if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
             return HomeViewModel(eventRepository) as T
+        } else if (modelClass.isAssignableFrom(DetailViewModel::class.java)) {
+            return DetailViewModel(eventRepository) as T
+        } else if (modelClass.isAssignableFrom(SearchViewModel::class.java)) {
+            return SearchViewModel(eventRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }

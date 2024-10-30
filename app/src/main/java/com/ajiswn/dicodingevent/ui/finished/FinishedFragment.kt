@@ -56,7 +56,7 @@ class FinishedFragment : Fragment() {
                 }
                 is Result.Error -> {
                     showLoading(false)
-                    showErrorSnackbar()
+                    showErrorSnackbar(result.error)
                 }
             }
         }
@@ -78,8 +78,8 @@ class FinishedFragment : Fragment() {
         binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
-    private fun showErrorSnackbar() {
-        val snackbar = Snackbar.make(binding.root, getString(R.string.error), Snackbar.LENGTH_INDEFINITE)
+    private fun showErrorSnackbar(error: String) {
+        val snackbar = Snackbar.make(binding.root, getString(R.string.error)+error, Snackbar.LENGTH_INDEFINITE)
             .setAction(getString(R.string.refresh)) { getFinishedEvents() }
         val bottomNavView = requireActivity().findViewById<View>(R.id.nav_view)
         snackbar.anchorView = bottomNavView

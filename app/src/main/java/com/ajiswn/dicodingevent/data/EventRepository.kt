@@ -1,10 +1,14 @@
 package com.ajiswn.dicodingevent.data
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.distinctUntilChanged
+import androidx.lifecycle.liveData
+import androidx.lifecycle.map
 import com.ajiswn.dicodingevent.data.local.entity.EventEntity
 import com.ajiswn.dicodingevent.data.local.room.EventDao
+import com.ajiswn.dicodingevent.data.remote.response.DetailEventResponse
 import com.ajiswn.dicodingevent.data.remote.response.EventResponse
 import com.ajiswn.dicodingevent.data.remote.retrofit.ApiService
 import com.ajiswn.dicodingevent.utils.AppExecutors
@@ -19,101 +23,148 @@ class EventRepository private constructor(
 ){
     private val result = MediatorLiveData<Result<List<EventEntity>>>()
 
-    fun getUpcomingEvent(): LiveData<Result<List<EventEntity>>> {
-        result.value = Result.Loading
-        val client = apiService.getUpcomingEvent()
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                if (response.isSuccessful) {
-                    val listEvents = response.body()?.listEvents
-                    val eventList = ArrayList<EventEntity>()
-                    appExecutors.diskIO.execute {
-                        listEvents?.forEach { event ->
-                            val isFavorite = eventDao.isEventFavorite(event.id)
-                            val events = EventEntity(
-                                event.id,
-                                event.summary,
-                                event.mediaCover,
-                                event.registrants,
-                                event.imageLogo,
-                                event.link,
-                                event.description,
-                                event.ownerName,
-                                event.cityName,
-                                event.quota,
-                                event.name,
-                                event.beginTime,
-                                event.endTime,
-                                event.category,
-                                isFavorite,
-                                active = 1
-                            )
-                            eventList.add(events)
-                        }
-                        eventDao.deleteEvent(1)
-                        eventDao.insertEvent(eventList)
-                    }
-                }
+    fun getUpcomingEvent(): LiveData<Result<List<EventEntity>>> = liveData {
+        emit(Result.Loading)
+        try {
+            val response = apiService.getUpcomingEvent()
+            val listEvents = response.listEvents
+            val eventList = listEvents.map { event ->
+                val isFavorite = eventDao.isEventFavorite(event.id)
+                EventEntity(
+                    event.id,
+                    event.summary,
+                    event.mediaCover,
+                    event.registrants,
+                    event.imageLogo,
+                    event.link,
+                    event.description,
+                    event.ownerName,
+                    event.cityName,
+                    event.quota,
+                    event.name,
+                    event.beginTime,
+                    event.endTime,
+                    event.category,
+                    isFavorite,
+                    active = 1
+                )
             }
-
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                result.value = Result.Error(t.message.toString())
-            }
-        })
-        val localData = eventDao.getUpcomingEvent()
-        result.addSource(localData.distinctUntilChanged()) { newData ->
-            result.value = Result.Success(newData)
+            eventDao.deleteEvent(1)
+            eventDao.insertEvent(eventList)
+        } catch (e: Exception) {
+            emit(Result.Error(e.message.toString()))
         }
-        return result
+        val localData: LiveData<Result<List<EventEntity>>> =
+            eventDao.getUpcomingEvent().map { Result.Success(it) }
+        emitSource(localData)
     }
 
-    fun getFinishedEvent(): LiveData<Result<List<EventEntity>>> {
-        result.value = Result.Loading
-        val client = apiService.getFinishedEvent()
-        client.enqueue(object : Callback<EventResponse> {
-            override fun onResponse(call: Call<EventResponse>, response: Response<EventResponse>) {
-                if (response.isSuccessful) {
-                    val listEvents = response.body()?.listEvents
-                    val eventList = ArrayList<EventEntity>()
-                    appExecutors.diskIO.execute {
-                        listEvents?.forEach { event ->
-                            val isFavorite = eventDao.isEventFavorite(event.id)
-                            val events = EventEntity(
-                                event.id,
-                                event.summary,
-                                event.mediaCover,
-                                event.registrants,
-                                event.imageLogo,
-                                event.link,
-                                event.description,
-                                event.ownerName,
-                                event.cityName,
-                                event.quota,
-                                event.name,
-                                event.beginTime,
-                                event.endTime,
-                                event.category,
-                                isFavorite,
-                                active = 0
-                            )
-                            eventList.add(events)
-                        }
-                        eventDao.deleteEvent(0)
-                        eventDao.insertEvent(eventList)
-                    }
-                }
+    fun getFinishedEvent(): LiveData<Result<List<EventEntity>>> = liveData {
+        emit(Result.Loading)
+        try {
+            val response = apiService.getFinishedEvent()
+            val listEvents = response.listEvents
+            val eventList = listEvents.map { event ->
+                val isFavorite = eventDao.isEventFavorite(event.id)
+                EventEntity(
+                    event.id,
+                    event.summary,
+                    event.mediaCover,
+                    event.registrants,
+                    event.imageLogo,
+                    event.link,
+                    event.description,
+                    event.ownerName,
+                    event.cityName,
+                    event.quota,
+                    event.name,
+                    event.beginTime,
+                    event.endTime,
+                    event.category,
+                    isFavorite,
+                    active = 0
+                )
             }
-
-            override fun onFailure(call: Call<EventResponse>, t: Throwable) {
-                result.value = Result.Error(t.message.toString())
-            }
-        })
-        val localData = eventDao.getFinishedEvent()
-        result.addSource(localData.distinctUntilChanged()) { newData ->
-            result.value = Result.Success(newData)
+            eventDao.deleteEvent(0)
+            eventDao.insertEvent(eventList)
+        } catch (e: Exception) {
+            emit(Result.Error(e.message.toString()))
         }
-        return result
+        val localData: LiveData<Result<List<EventEntity>>> =
+            eventDao.getFinishedEvent().map { Result.Success(it) }
+        emitSource(localData)
     }
+
+    fun getDetailEvent(id: Int): LiveData<Result<EventEntity>> = liveData {
+        emit(Result.Loading)
+        try {
+            val response = apiService.getDetailEvent(id)
+            val event = response.event
+            val isFavorite = eventDao.isEventFavorite(event.id)
+            val eventDetail = EventEntity(
+                event.id,
+                event.summary,
+                event.mediaCover,
+                event.registrants,
+                event.imageLogo,
+                event.link,
+                event.description,
+                event.ownerName,
+                event.cityName,
+                event.quota,
+                event.name,
+                event.beginTime,
+                event.endTime,
+                event.category,
+                isFavorite,
+            )
+
+            eventDao.insertEvent(listOf(eventDetail))
+            emit(Result.Success(eventDetail))
+        } catch (e: Exception) {
+            emit(Result.Error(e.message.toString()))
+        }
+        val localData: LiveData<Result<EventEntity>> =
+            eventDao.getDetailEvent(id).map { Result.Success(it) }
+        emitSource(localData)
+    }
+
+    fun searchEvent(keyword: String): LiveData<Result<List<EventEntity>>> = liveData {
+        emit(Result.Loading)
+        try {
+            val response = apiService.searchEvent(keyword = keyword)
+            val listEvents = response.listEvents
+            val eventList = listEvents.map { event ->
+                val isFavorite = eventDao.isEventFavorite(event.id)
+                EventEntity(
+                    event.id,
+                    event.summary,
+                    event.mediaCover,
+                    event.registrants,
+                    event.imageLogo,
+                    event.link,
+                    event.description,
+                    event.ownerName,
+                    event.cityName,
+                    event.quota,
+                    event.name,
+                    event.beginTime,
+                    event.endTime,
+                    event.category,
+                    isFavorite,
+                    active = -1
+                )
+            }
+            eventDao.deleteEvent(-1)
+            eventDao.insertEvent(eventList)
+        } catch (e: Exception) {
+            emit(Result.Error(e.message.toString()))
+        }
+        val localData: LiveData<Result<List<EventEntity>>> = eventDao.searchEvent(keyword).map { Result.Success(it) }
+        emitSource(localData)
+    }
+
+
 
     companion object {
         @Volatile

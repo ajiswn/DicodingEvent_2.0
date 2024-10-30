@@ -7,7 +7,7 @@ import com.ajiswn.dicodingevent.data.local.entity.EventEntity
 @Dao
 interface EventDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insertEvent(event: List<EventEntity>)
+    suspend fun insertEvent(event: List<EventEntity>)
 
     @Query("SELECT * FROM event WHERE active = 1 ORDER BY beginTime DESC")
     fun getUpcomingEvent(): LiveData<List<EventEntity>>
@@ -16,7 +16,7 @@ interface EventDao {
     fun getFinishedEvent(): LiveData<List<EventEntity>>
 
     @Query("SELECT * FROM event WHERE id = :id")
-    fun getDetailEvent(id: Int): LiveData<List<EventEntity>>
+    fun getDetailEvent(id: Int): LiveData<EventEntity>
 
     @Query("SELECT * FROM event WHERE favorite = 1")
     fun getFavoriteEvent(): LiveData<List<EventEntity>>
@@ -25,11 +25,11 @@ interface EventDao {
     fun searchEvent(name: String): LiveData<List<EventEntity>>
 
     @Query("DELETE FROM event WHERE favorite = 0 AND active = :active")
-    fun deleteEvent(active: Int)
+    suspend fun deleteEvent(active: Int)
 
     @Update
-    fun updateEvent(event: EventEntity)
+    suspend fun updateEvent(event: EventEntity)
 
     @Query("SELECT EXISTS(SELECT * FROM event WHERE id = :id AND favorite = 1)")
-    fun isEventFavorite(id: Int?): Boolean
+    suspend fun isEventFavorite(id: Int?): Boolean
 }

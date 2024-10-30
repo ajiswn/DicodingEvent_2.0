@@ -10,17 +10,25 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
+import androidx.fragment.app.viewModels
 import com.ajiswn.dicodingevent.R
+import com.ajiswn.dicodingevent.data.Result
+import com.ajiswn.dicodingevent.data.local.entity.EventEntity
 import com.ajiswn.dicodingevent.databinding.ActivityDetailBinding
 import com.ajiswn.dicodingevent.data.remote.response.Event
+import com.ajiswn.dicodingevent.ui.ViewModelFactory
+import com.ajiswn.dicodingevent.ui.upcoming.UpcomingViewModel
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class DetailActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailBinding
-    private val viewModel: DetailViewModel by viewModels()
+    private val viewModel: DetailViewModel by viewModels {
+        ViewModelFactory.getInstance(this)
+    }
 
     companion object {
         const val EVENT_ID = "EVENT_ID"
@@ -35,30 +43,35 @@ class DetailActivity : AppCompatActivity() {
 
         val eventId = intent.getIntExtra(EVENT_ID, -1)
         if (eventId != -1) {
-            viewModel.getDetailEvent(eventId)
-            observeViewModel()
+            getDetailEvent(eventId)
         }
     }
 
-    private fun observeViewModel() {
-        viewModel.eventDetail.observe(this) { event ->
-            if (event != null) {
-                updateUI(event)
-            }
-        }
-
-        viewModel.isLoading.observe(this) { isLoading ->
-            binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        }
-
-        viewModel.errorMessage.observe(this) { message ->
-            message?.let {
-                Toast.makeText(this, it, Toast.LENGTH_LONG).show()
+    private fun getDetailEvent(id: Int){
+        viewModel.getDetailEvent(id).observe(this) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+                        showLoading(true)
+                    }
+                    is Result.Success -> {
+                        showLoading(false)
+                        setEventData(result.data)
+                    }
+                    is Result.Error -> {
+                        showLoading(false)
+                        val snackbar = Snackbar.make(binding.root, getString(R.string.error) + result.error, Snackbar.LENGTH_INDEFINITE)
+                            .setAction(getString(R.string.refresh)) { getDetailEvent(id) }
+                        val btn = this.findViewById<View>(R.id.btnRegister)
+                        snackbar.anchorView = btn
+                        snackbar.show()
+                    }
+                }
             }
         }
     }
 
-    private fun updateUI(event: Event) {
+    private fun setEventData(event: EventEntity) {
         with(binding) {
             ivMediaCover.loadImage(event.mediaCover)
             tvName.text = event.name
@@ -101,5 +114,9 @@ class DetailActivity : AppCompatActivity() {
             .load(url)
             .centerCrop()
             .into(this)
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }
