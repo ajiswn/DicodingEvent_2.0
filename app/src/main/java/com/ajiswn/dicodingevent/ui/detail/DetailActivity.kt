@@ -6,18 +6,14 @@ import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
-import androidx.fragment.app.viewModels
 import com.ajiswn.dicodingevent.R
 import com.ajiswn.dicodingevent.data.Result
 import com.ajiswn.dicodingevent.data.local.entity.EventEntity
 import com.ajiswn.dicodingevent.databinding.ActivityDetailBinding
-import com.ajiswn.dicodingevent.data.remote.response.Event
 import com.ajiswn.dicodingevent.ui.ViewModelFactory
-import com.ajiswn.dicodingevent.ui.upcoming.UpcomingViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
 import java.time.LocalDateTime
@@ -88,12 +84,40 @@ class DetailActivity : AppCompatActivity() {
             tvScheduleStart.text = event.beginTime
             tvScheduleEnd.text = event.endTime
             tvCityName.text = event.cityName
-
-            val link = event.link
             btnRegister.setOnClickListener {
-                val web = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                val web = Intent(Intent.ACTION_VIEW, Uri.parse(event.link))
                 startActivity(web)
             }
+
+            binding.ivFavorite.setImageResource(
+                if (event.isFavorite == true) {
+                    R.drawable.ic_favorite_fill_24dp
+                } else {
+                    R.drawable.ic_favorite_outline_24dp
+                }
+            )
+
+            binding.ivFavorite.setOnClickListener {
+                val snackbarAnchorView = binding.btnRegister
+
+                if (event.isFavorite == true) {
+                    event.id?.let { id ->
+                        viewModel.unsetFavoriteEvent(id)
+                        Snackbar.make(binding.root, getString(R.string.unsetFavorite), Snackbar.LENGTH_LONG)
+                            .setAnchorView(snackbarAnchorView)
+                            .show()
+                    }
+                } else {
+                    event.id?.let { id ->
+                        viewModel.setFavoriteEvent(id)
+                        Snackbar.make(binding.root, getString(R.string.setFavorite), Snackbar.LENGTH_LONG)
+                            .setAnchorView(snackbarAnchorView)
+                            .show()
+                    }
+                }
+            }
+
+
         }
     }
 

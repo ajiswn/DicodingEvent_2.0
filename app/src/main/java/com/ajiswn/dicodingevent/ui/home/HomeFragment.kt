@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,9 +14,13 @@ import com.ajiswn.dicodingevent.data.Result
 import com.ajiswn.dicodingevent.data.local.entity.EventEntity
 import com.ajiswn.dicodingevent.data.remote.response.ListEventsItem
 import com.ajiswn.dicodingevent.databinding.FragmentHomeBinding
+import com.ajiswn.dicodingevent.ui.HomeActivity
 import com.ajiswn.dicodingevent.ui.ViewModelFactory
 import com.ajiswn.dicodingevent.ui.adapter.HorizontalEventAdapter
 import com.ajiswn.dicodingevent.ui.adapter.VerticalEventAdapter
+import com.ajiswn.dicodingevent.ui.setting.SettingPreferences
+import com.ajiswn.dicodingevent.ui.setting.SettingViewModel
+import com.ajiswn.dicodingevent.ui.setting.dataStore
 import com.google.android.material.snackbar.Snackbar
 
 class HomeFragment : Fragment() {
@@ -38,6 +43,20 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val settingViewModel: SettingViewModel by viewModels {
+            com.ajiswn.dicodingevent.ui.setting.ViewModelFactory(
+                SettingPreferences.getInstance(requireActivity().application.dataStore)
+            )
+        }
+
+        settingViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive: Boolean ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
 
         upcomingEventAdapter = HorizontalEventAdapter()
         getUpcomingEvents()
@@ -93,7 +112,6 @@ class HomeFragment : Fragment() {
             ListEventsItem(
                 id = event.id,
                 name = event.name,
-                summary = event.summary,
                 imageLogo = event.imageLogo
             )
         }

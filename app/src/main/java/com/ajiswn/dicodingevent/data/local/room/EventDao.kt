@@ -21,14 +21,14 @@ interface EventDao {
     @Query("SELECT * FROM event WHERE favorite = 1")
     fun getFavoriteEvent(): LiveData<List<EventEntity>>
 
+    @Query("UPDATE event SET favorite = :isFavorite WHERE id = :id")
+    suspend fun setFavorite(id: Int, isFavorite: Boolean)
+
     @Query("SELECT * FROM event WHERE name LIKE '%' || :name || '%'")
     fun searchEvent(name: String): LiveData<List<EventEntity>>
 
     @Query("DELETE FROM event WHERE favorite = 0 AND active = :active")
     suspend fun deleteEvent(active: Int)
-
-    @Update
-    suspend fun updateEvent(event: EventEntity)
 
     @Query("SELECT EXISTS(SELECT * FROM event WHERE id = :id AND favorite = 1)")
     suspend fun isEventFavorite(id: Int?): Boolean

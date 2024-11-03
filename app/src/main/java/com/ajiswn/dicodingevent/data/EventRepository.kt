@@ -164,7 +164,21 @@ class EventRepository private constructor(
         emitSource(localData)
     }
 
+    fun getFavoriteEvent(): LiveData<Result<List<EventEntity>>> = liveData {
+        emit(Result.Loading)
+        try {
+            val favoriteEvents: LiveData<Result<List<EventEntity>>> =
+                eventDao.getFavoriteEvent().map { Result.Success(it) }
+            emitSource(favoriteEvents)
+        } catch (e: Exception) {
+            emit(Result.Error(e.message.toString()))
+        }
+    }
 
+
+    suspend fun setFavoriteEvent(id: Int, favoriteState: Boolean) {
+        eventDao.setFavorite(id, favoriteState)
+    }
 
     companion object {
         @Volatile

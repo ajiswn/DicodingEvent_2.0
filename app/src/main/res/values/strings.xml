@@ -4,6 +4,8 @@
     <string name="title_home">Home</string>
     <string name="title_upcoming">Upcoming</string>
     <string name="title_finished">Finished</string>
+    <string name="title_favorite">Favorite</string>
+    <string name="title_setting">Setting</string>
     <string name="title_detail">Detail Event</string>
     <string name="title_search">Search Event</string>
 
@@ -31,10 +33,17 @@
     <string name="event_cityName_title">Lokasi</string>
     <string name="event_cityName" tools:keep="@string/event_cityName">Event City Name</string>
     <string name="free_register">Daftar Gratis</string>
+    <string name="favorite_button">Favorite</string>
 
     <string name="searchbar_hint">Search</string>
     <string name="searchview_hint">Search&#8239;</string>
 
     <string name="refresh">Refresh</string>
     <string name="error">Error: </string>
+
+    <string name="dark_mode">Dark Mode</string>
+    <string name="status_theme">Theme Status</string>
+
+    <string name="unsetFavorite">Event dihapus dari favorit</string>
+    <string name="setFavorite">Event ditambahkan ke favorit</string>
 </resources>

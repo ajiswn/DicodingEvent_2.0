@@ -13,6 +13,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.ajiswn.dicodingevent.R
 import com.ajiswn.dicodingevent.databinding.ActivityHomeBinding
 import com.ajiswn.dicodingevent.ui.search.SearchActivity
+import com.google.android.material.snackbar.Snackbar
 
 class HomeActivity : AppCompatActivity() {
 
@@ -31,7 +32,9 @@ class HomeActivity : AppCompatActivity() {
             setOf(
                 R.id.navigation_home,
                 R.id.navigation_upcoming,
-                R.id.navigation_finished
+                R.id.navigation_finished,
+                R.id.navigation_favorite,
+                R.id.navigation_setting
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -56,6 +59,12 @@ class HomeActivity : AppCompatActivity() {
                 )
                 R.id.navigation_finished -> menuItem.setIcon(
                     if (menuItem.itemId == activeId) R.drawable.ic_finished_fill_24dp else R.drawable.ic_finished_outline_24dp
+                )
+                R.id.navigation_favorite -> menuItem.setIcon(
+                    if (menuItem.itemId == activeId) R.drawable.ic_favorite_fill_24dp else R.drawable.ic_favorite_outline_24dp
+                )
+                R.id.navigation_setting -> menuItem.setIcon(
+                    if (menuItem.itemId == activeId) R.drawable.ic_setting_fill_24dp else R.drawable.ic_setting_outline_24dp
                 )
             }
         }
